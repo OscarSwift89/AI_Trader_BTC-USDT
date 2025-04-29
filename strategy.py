@@ -15,7 +15,7 @@ from ai_models import AIModels
 
 class TradingStrategy:
     def __init__(self):
-        # 初始化参数
+        # Initialize parameters
         self.rsi_period = RSI_PERIOD
         self.rsi_overbought = RSI_OVERBOUGHT
         self.rsi_oversold = RSI_OVERSOLD
@@ -31,27 +31,27 @@ class TradingStrategy:
         self.atr_multiplier = ATR_MULTIPLIER
         self.vp_bins = VP_BINS
         
-        # 风险管理参数
+        # Risk management parameters
         self.stop_loss_pct = STOP_LOSS_PCT
         self.take_profit_pct = TAKE_PROFIT_PCT
         self.max_position_size = MAX_POSITION_SIZE
         self.volatility_threshold = VOLATILITY_THRESHOLD
         
-        # 初始化AI模型
+        # Initialize AI models
         self.ai_models = AIModels()
         self.is_ai_trained = False
         
     def train_ai_models(self, df):
         """训练AI模型"""
-        print("训练随机森林模型...")
+        print("Training random forest model...")
         rf_accuracy = self.ai_models.train_random_forest(df)
-        print(f"随机森林准确率: {rf_accuracy:.2f}")
+        print(f"Random forest accuracy: {rf_accuracy:.2f}")
         
-        print("训练LSTM模型...")
+        print("Training LSTM model...")
         lstm_accuracy = self.ai_models.train_lstm(df)
-        print(f"LSTM准确率: {lstm_accuracy:.2f}")
+        print(f"LSTM accuracy: {lstm_accuracy:.2f}")
         
-        print("训练强化学习模型...")
+        print("Training reinforcement learning model...")
         self.ai_models.train_rl(df)
         
         self.is_ai_trained = True
@@ -61,7 +61,7 @@ class TradingStrategy:
         # RSI
         df['rsi'] = talib.RSI(df['close'], timeperiod=self.rsi_period)
         
-        # 移动平均线
+        # Moving Averages
         df['ma'] = talib.SMA(df['close'], timeperiod=self.ma_period)
         df['ma_fast'] = talib.SMA(df['close'], timeperiod=self.ma_fast_period)
         df['ma_slow'] = talib.SMA(df['close'], timeperiod=self.ma_slow_period)
@@ -99,7 +99,7 @@ class TradingStrategy:
         # Volume Profile
         df['volume_profile'] = self._calculate_volume_profile(df)
         
-        # 波动率
+        # Volatility
         df['volatility'] = df['close'].pct_change().rolling(window=20).std()
         
         return df
@@ -114,16 +114,16 @@ class TradingStrategy:
     
     def calculate_position_size(self, df, current_price, balance):
         """计算仓位大小"""
-        # 基于波动率调整仓位
+        # Adjust position size based on volatility
         current_volatility = df['volatility'].iloc[-1]
         volatility_factor = 1 - (current_volatility / self.volatility_threshold)
         volatility_factor = max(0.1, min(1.0, volatility_factor))
         
-        # 基于ATR调整止损距离
+        # Adjust stop loss distance based on ATR
         atr = df['atr'].iloc[-1]
         stop_distance = atr * self.atr_multiplier
         
-        # 计算最大允许仓位
+        # Calculate maximum allowed position size
         max_position_value = balance * self.max_position_size
         position_size = max_position_value * volatility_factor / current_price
         
@@ -139,50 +139,50 @@ class TradingStrategy:
             current = df.iloc[i]
             previous = df.iloc[i-1]
             
-            # 获取AI预测
+            # Get AI prediction
             if self.is_ai_trained:
                 ai_signal = self.ai_models.predict(df.iloc[:i+1])
             else:
                 ai_signal = 0
             
-            # RSI信号
+            # RSI signal
             rsi_signal = 0
             if current['rsi'] > self.rsi_overbought and previous['rsi'] <= self.rsi_overbought:
                 rsi_signal = -1
             elif current['rsi'] < self.rsi_oversold and previous['rsi'] >= self.rsi_oversold:
                 rsi_signal = 1
                 
-            # MACD信号
+            # MACD signal
             macd_signal = 0
             if current['macd'] > current['macd_signal'] and previous['macd'] <= previous['macd_signal']:
                 macd_signal = 1
             elif current['macd'] < current['macd_signal'] and previous['macd'] >= previous['macd_signal']:
                 macd_signal = -1
                 
-            # Bollinger Bands信号
+            # Bollinger Bands signal
             bb_signal = 0
             if current['close'] < current['bb_lower']:
                 bb_signal = 1
             elif current['close'] > current['bb_upper']:
                 bb_signal = -1
                 
-            # 综合信号
+            # Combined signal
             signal = 0
             if (rsi_signal == 1 and macd_signal == 1) or (rsi_signal == 1 and bb_signal == 1):
                 signal = 1
             elif (rsi_signal == -1 and macd_signal == -1) or (rsi_signal == -1 and bb_signal == -1):
                 signal = -1
                 
-            # 结合AI信号
+            # Combine with AI signal
             if self.is_ai_trained:
                 if ai_signal == 1 and signal == 1:
-                    signal = 1  # 强烈买入
+                    signal = 1  # Strong buy
                 elif ai_signal == 2 and signal == -1:
-                    signal = -1  # 强烈卖出
+                    signal = -1  # Strong sell
                 elif ai_signal == 0:
-                    signal = 0  # 观望
+                    signal = 0  # Hold
                 
-            # 计算止损止盈价格
+            # Calculate stop loss and take profit prices
             stop_loss = current['close'] * (1 - self.stop_loss_pct) if signal == 1 else current['close'] * (1 + self.stop_loss_pct)
             take_profit = current['close'] * (1 + self.take_profit_pct) if signal == 1 else current['close'] * (1 - self.take_profit_pct)
             
@@ -190,7 +190,7 @@ class TradingStrategy:
             stop_losses.append(stop_loss)
             take_profits.append(take_profit)
             
-        # 添加第一个时间点的信号（默认为0）
+        # Add signal for the first time point (default to 0)
         signals.insert(0, 0)
         stop_losses.insert(0, 0)
         take_profits.insert(0, 0)
