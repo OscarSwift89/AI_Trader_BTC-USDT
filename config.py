@@ -10,30 +10,42 @@ SECRET_KEY = os.getenv('OKX_SECRET_KEY')
 PASSPHRASE = os.getenv('OKX_PASSPHRASE')
 
 # Trading configuration
-SYMBOL = 'BTC-USDT'  # Trading pair
-LEVERAGE = 1  # Leverage ratio
-POSITION_SIZE = 0.01  # Position size per trade (BTC)
+SYMBOL = 'BTC/USDT'
+TIMEFRAME = '1h'
 
 # Backtest configuration
 BACKTEST_START_DATE = '2023-01-01'
 BACKTEST_END_DATE = '2023-12-31'
-TIMEFRAME = '1h'  # Timeframe: 1 hour
 
 # Risk management parameters
-MAX_DRAWDOWN = 0.15  # Maximum drawdown limit (15%)
-STOP_LOSS_PCT = 0.02  # Stop loss percentage (2%)
-TAKE_PROFIT_PCT = 0.04  # Take profit percentage (4%)
+STOP_LOSS_PCT = 0.01  # 1% stop loss
+TAKE_PROFIT_PCT = 0.02  # 2% take profit
+MAX_DRAWDOWN_PCT = 0.03  # 3% maximum drawdown
+
+# Technical indicator parameters
+RSI_PERIOD = 14
+RSI_OVERBOUGHT = 65  # More sensitive
+RSI_OVERSOLD = 35  # More sensitive
+
+MACD_FAST = 12
+MACD_SLOW = 26
+MACD_SIGNAL = 9
+
+BB_PERIOD = 20
+BB_STD = 1.5  # More sensitive
+
+MA_PERIOD = 20
+
+# Trading configuration
+LEVERAGE = 1  # Leverage ratio
+POSITION_SIZE = 0.01  # Position size per trade (BTC)
+
+# Risk management parameters
 MAX_POSITION_SIZE = 0.1  # Maximum position size (10%)
 VOLATILITY_THRESHOLD = 0.03  # Volatility threshold (3%)
 
 # Technical indicator parameters
-# RSI parameters
-RSI_PERIOD = 14
-RSI_OVERBOUGHT = 70
-RSI_OVERSOLD = 30
-
 # Moving Average parameters
-MA_PERIOD = 20
 MA_FAST_PERIOD = 10
 MA_SLOW_PERIOD = 30
 
@@ -43,7 +55,6 @@ MACD_SLOW_PERIOD = 26
 MACD_SIGNAL_PERIOD = 9
 
 # Bollinger Bands parameters
-BB_PERIOD = 20
 BB_STD_DEV = 2
 
 # ATR parameters

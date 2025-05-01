@@ -1,49 +1,37 @@
-import time
-import hmac
-import base64
-import hashlib
-import requests
-from config import API_KEY, SECRET_KEY, PASSPHRASE, SYMBOL
+import ccxt
+import pandas as pd
+from datetime import datetime
+from config import API_KEY, SECRET_KEY, PASSPHRASE
 
 class OKXAPI:
     def __init__(self):
-        self.api_key = API_KEY
-        self.secret_key = SECRET_KEY
-        self.passphrase = PASSPHRASE
-        self.base_url = 'https://www.okx.com'
+        self.exchange = ccxt.okx({
+            'apiKey': API_KEY,
+            'secret': SECRET_KEY,
+            'password': PASSPHRASE,
+            'enableRateLimit': True
+        })
         
-    def _get_timestamp(self):
-        return str(int(time.time() * 1000))
-    
-    def _get_signature(self, timestamp, method, request_path, body=''):
-        message = timestamp + method + request_path + body
-        mac = hmac.new(bytes(self.secret_key, encoding='utf8'), 
-                      bytes(message, encoding='utf-8'), 
-                      digestmod='sha256')
-        return base64.b64encode(mac.digest()).decode()
-    
-    def _get_headers(self, method, request_path, body=''):
-        timestamp = self._get_timestamp()
-        signature = self._get_signature(timestamp, method, request_path, body)
-        return {
-            'OK-ACCESS-KEY': self.api_key,
-            'OK-ACCESS-SIGN': signature,
-            'OK-ACCESS-TIMESTAMP': timestamp,
-            'OK-ACCESS-PASSPHRASE': self.passphrase,
-            'Content-Type': 'application/json'
-        }
-    
-    def get_klines(self, timeframe='1h', limit=100):
-        """获取K线数据"""
-        endpoint = f'/api/v5/market/candles'
-        params = {
-            'instId': SYMBOL,
-            'bar': timeframe,
-            'limit': limit
-        }
-        url = self.base_url + endpoint
-        response = requests.get(url, params=params)
-        return response.json()
+    def get_klines(self, symbol='BTC/USDT', timeframe='1h', limit=1000):
+        """Get historical kline data"""
+        try:
+            # Fetch OHLCV data
+            ohlcv = self.exchange.fetch_ohlcv(symbol, timeframe, limit=limit)
+            
+            # Convert to DataFrame
+            df = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+            df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
+            
+            # Format data to match the expected structure
+            data = {
+                'data': df.values.tolist()
+            }
+            
+            return data
+            
+        except Exception as e:
+            print(f"Error fetching kline data: {e}")
+            return None
     
     def get_account_balance(self):
         """获取账户余额"""
