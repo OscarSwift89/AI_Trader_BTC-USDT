@@ -11,6 +11,7 @@ This project is an AI-powered trading bot designed for Bitcoin trading strategy 
 ### Data Collection
 - Real-time Bitcoin price data from OKX exchange
 - Historical K-line data with multiple timeframes
+- **Supports backtesting with real OKX BTC/USDT daily data (e.g., 2023)**
 - Customizable data collection parameters
 
 ### AI Models
@@ -74,29 +75,30 @@ OKX_PASSPHRASE=your_passphrase
 
 ## Usage Guide
 
-### Basic Usage
+### 1. 获取真实BTC日线数据（OKX）
+运行以下脚本，自动下载2023年BTC/USDT日线K线数据：
+```bash
+python fetch_okx_btc_daily.py
+```
+生成的文件为 `btc_okx_2023_1d.csv`。
 
-1. Run backtesting:
+### 2. 运行回测
 ```bash
 python main.py
 ```
+- 回测将自动读取 `btc_okx_2023_1d.csv` 作为数据源。
+- 结果会显示真实BTC价格曲线和策略权益曲线。
 
-2. View results:
-- Automatic display of backtest metrics
-- Generation of performance charts
-- Detailed trade analysis report
+### 3. 策略参数调整
+- 策略信号阈值、止损止盈等参数可在 `config.py` 和 `strategy.py` 中调整：
+  - `STOP_LOSS_PCT`、`TAKE_PROFIT_PCT`（止损/止盈百分比）
+  - `get_signal` 方法中的信号阈值
+- 支持趋势过滤、手续费模拟等高级自定义（详见代码注释）
 
-### Advanced Features
-
-1. Custom Strategy
-- Modify `strategy.py` to implement your own trading logic
-- Add new technical indicators
-- Adjust risk management parameters
-
-2. Model Training
-- Customize model parameters in `ai_models.py`
-- Add new features for prediction
-- Implement different machine learning algorithms
+### 4. 查看结果
+- 自动弹出图表窗口，支持自适应和最大化显示
+- Y轴单位均为 USDT
+- 终端输出详细回测指标
 
 ## Project Structure
 
@@ -107,6 +109,8 @@ BTC_AI_Trading_bot/
 ├── backtest.py          # Backtesting engine
 ├── strategy.py          # Trading strategy implementation
 ├── okx_api.py           # OKX exchange API interface
+├── fetch_okx_btc_daily.py # Script to fetch real BTC/USDT daily data from OKX
+├── btc_okx_2023_1d.csv  # Real BTC/USDT daily data (generated)
 ├── config.py            # Configuration file
 ├── requirements.txt     # Dependencies
 └── README.md            # Documentation
