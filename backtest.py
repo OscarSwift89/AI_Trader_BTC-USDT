@@ -175,28 +175,34 @@ class BacktestEngine:
         
     def plot_results(self, metrics):
         """Plot backtest results"""
+        plt.ion()  # 开启交互模式
         # Create figure with subplots
         fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8), gridspec_kw={'height_ratios': [2, 1]})
-        
+        # 最大化窗口（Windows下）
+        try:
+            fig.canvas.manager.window.state('zoomed')
+        except Exception:
+            try:
+                fig.canvas.manager.window.showMaximized()
+            except Exception:
+                pass  # 兼容不同平台
         # Plot equity curve
         ax1.plot(self.equity_curve, label='Equity Curve', color='blue')
         ax1.set_title('Equity Curve')
         ax1.set_xlabel('Time')
-        ax1.set_ylabel('Equity')
+        ax1.set_ylabel('Equity (USDT)')
         ax1.grid(True)
         ax1.legend()
-        
         # Plot price chart
         ax2.plot(self.price_curve, label='Price', color='green')
         ax2.set_title('Price Chart')
         ax2.set_xlabel('Time')
-        ax2.set_ylabel('Price')
+        ax2.set_ylabel('Price (USDT)')
         ax2.grid(True)
         ax2.legend()
-        
-        # Adjust layout
+        # 自适应布局
         plt.tight_layout()
-        
+        fig.autofmt_xdate()
         # Print metrics
         print("\nBacktest Results:")
         print(f"Total Return: {metrics['total_return']:.2f}%")
@@ -204,6 +210,5 @@ class BacktestEngine:
         print(f"Sharpe Ratio: {metrics['sharpe_ratio']:.2f}")
         print(f"Win Rate: {metrics['win_rate']:.2f}%")
         print(f"Total Trades: {metrics['total_trades']}")
-        
         # Show plot
-        plt.show() 
+        plt.show(block=True) 
