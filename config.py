@@ -14,25 +14,25 @@ SYMBOL = 'BTC/USDT'
 TIMEFRAME = '1h'
 
 # Backtest configuration
-BACKTEST_START_DATE = '2023-01-01'
+BACKTEST_START_DATE = '2022-01-01'
 BACKTEST_END_DATE = '2023-12-31'
 
 # Risk management parameters
-STOP_LOSS_PCT = 0.01  # 1% stop loss
-TAKE_PROFIT_PCT = 0.02  # 2% take profit
-MAX_DRAWDOWN_PCT = 0.03  # 3% maximum drawdown
+STOP_LOSS_PCT = 0.03  # 3% stop loss
+TAKE_PROFIT_PCT = 0.06  # 6% take profit
+MAX_DRAWDOWN_PCT = 0.05  # 5% maximum drawdown
 
 # Technical indicator parameters
 RSI_PERIOD = 14
-RSI_OVERBOUGHT = 65  # More sensitive
-RSI_OVERSOLD = 35  # More sensitive
+RSI_OVERBOUGHT = 70  # More conservative
+RSI_OVERSOLD = 30  # More conservative
 
 MACD_FAST = 12
 MACD_SLOW = 26
 MACD_SIGNAL = 9
 
 BB_PERIOD = 20
-BB_STD = 1.5  # More sensitive
+BB_STD = 2.0  # More conservative
 
 MA_PERIOD = 20
 

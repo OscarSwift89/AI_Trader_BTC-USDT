@@ -68,11 +68,16 @@ class TradingStrategy:
         ma_signal = np.where(df['close'] > df['ma'], 1,
                            np.where(df['close'] < df['ma'], -1, 0))
         
-        # Combine signals
-        signals = rsi_signal + macd_signal + bb_signal + ma_signal
+        # Combine signals with weights
+        signals = (
+            rsi_signal * 0.3 +
+            macd_signal * 0.3 +
+            bb_signal * 0.2 +
+            ma_signal * 0.2
+        )
         
-        # Normalize to -1, 0, 1
-        signals = np.where(signals > 1, 1, np.where(signals < -1, -1, 0))
+        # Normalize to range [-2, 2] for stronger signals
+        signals = signals * 2
         
         # Convert to pandas Series
         signals = pd.Series(signals, index=df.index)
@@ -88,17 +93,10 @@ class TradingStrategy:
     def get_signal(self, df):
         """Get trading signal"""
         df = self.calculate_indicators(df)
-        
-        # Get AI prediction
-        ai_signal = self.ai_models.predict(df)
-        
-        # Get technical signals
         tech_signal = self.generate_signals(df).iloc[-1]
-        
-        # More aggressive signal combination
-        if ai_signal == 1 or tech_signal == 1:
+        if tech_signal > 0.2:
             return 1  # Buy signal
-        elif ai_signal == -1 or tech_signal == -1:
+        elif tech_signal < -0.2:
             return -1  # Sell signal
         else:
             return 0  # Hold

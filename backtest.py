@@ -12,6 +12,7 @@ class BacktestEngine:
         self.strategy = TradingStrategy()
         self.trades = []
         self.equity_curve = []
+        self.price_curve = []  # 新增价格曲线
         self.initial_balance = 10000  # Starting balance
         
     def run_backtest(self, df):
@@ -28,9 +29,11 @@ class BacktestEngine:
         max_drawdown = 0
         
         # Train AI models
+        print("\nTraining AI models...")
         self.strategy.train_ai_models(df)
         
         # Run backtest
+        print("\nRunning backtest...")
         for i in range(len(df)):
             current_price = df['close'].iloc[i]
             
@@ -50,6 +53,7 @@ class BacktestEngine:
                         'price': current_price,
                         'time': df.index[i]
                     })
+                    print(f"Buy at {current_price:.2f}")
                 elif signal == -1:  # Sell signal
                     position = -1
                     entry_price = current_price
@@ -61,64 +65,72 @@ class BacktestEngine:
                         'price': current_price,
                         'time': df.index[i]
                     })
+                    print(f"Sell at {current_price:.2f}")
             else:  # Has position
                 if position == 1:  # Long position
-                    if current_price < stop_loss:
+                    if current_price <= stop_loss:  # Stop loss hit
+                        balance *= (current_price / entry_price)
                         position = 0
-                        balance *= (1 - STOP_LOSS_PCT)
                         self.trades.append({
                             'type': 'stop_loss',
                             'price': current_price,
                             'time': df.index[i]
                         })
-                    elif current_price > take_profit:
+                        print(f"Stop loss at {current_price:.2f}")
+                    elif current_price >= take_profit:  # Take profit hit
+                        balance *= (current_price / entry_price)
                         position = 0
-                        balance *= (1 + TAKE_PROFIT_PCT)
                         self.trades.append({
                             'type': 'take_profit',
                             'price': current_price,
                             'time': df.index[i]
                         })
+                        print(f"Take profit at {current_price:.2f}")
                     elif current_price > max_drawdown:
                         max_drawdown = current_price
-                    elif (max_drawdown - current_price) / max_drawdown > MAX_DRAWDOWN_PCT:
+                    elif signal == -1:  # Exit on opposite signal
+                        balance *= (current_price / entry_price)
                         position = 0
-                        balance *= (1 - MAX_DRAWDOWN_PCT)
                         self.trades.append({
-                            'type': 'max_drawdown',
+                            'type': 'signal_exit',
                             'price': current_price,
                             'time': df.index[i]
                         })
+                        print(f"Signal exit at {current_price:.2f}")
                 else:  # Short position
-                    if current_price > stop_loss:
+                    if current_price >= stop_loss:  # Stop loss hit
+                        balance *= (entry_price / current_price)
                         position = 0
-                        balance *= (1 - STOP_LOSS_PCT)
                         self.trades.append({
                             'type': 'stop_loss',
                             'price': current_price,
                             'time': df.index[i]
                         })
-                    elif current_price < take_profit:
+                        print(f"Stop loss at {current_price:.2f}")
+                    elif current_price <= take_profit:  # Take profit hit
+                        balance *= (entry_price / current_price)
                         position = 0
-                        balance *= (1 + TAKE_PROFIT_PCT)
                         self.trades.append({
                             'type': 'take_profit',
                             'price': current_price,
                             'time': df.index[i]
                         })
+                        print(f"Take profit at {current_price:.2f}")
                     elif current_price < max_drawdown:
                         max_drawdown = current_price
-                    elif (current_price - max_drawdown) / max_drawdown > MAX_DRAWDOWN_PCT:
+                    elif signal == 1:  # Exit on opposite signal
+                        balance *= (entry_price / current_price)
                         position = 0
-                        balance *= (1 - MAX_DRAWDOWN_PCT)
                         self.trades.append({
-                            'type': 'max_drawdown',
+                            'type': 'signal_exit',
                             'price': current_price,
                             'time': df.index[i]
                         })
+                        print(f"Signal exit at {current_price:.2f}")
             
             # Update equity curve
             self.equity_curve.append(balance)
+            self.price_curve.append(current_price)  # 记录价格
         
         # Calculate metrics
         metrics = self.calculate_metrics()
@@ -175,7 +187,7 @@ class BacktestEngine:
         ax1.legend()
         
         # Plot price chart
-        ax2.plot(self.equity_curve, label='Price', color='green')
+        ax2.plot(self.price_curve, label='Price', color='green')
         ax2.set_title('Price Chart')
         ax2.set_xlabel('Time')
         ax2.set_ylabel('Price')

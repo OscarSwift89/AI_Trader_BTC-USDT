@@ -2,12 +2,12 @@ import pandas as pd
 from okx_api import OKXAPI
 from backtest import BacktestEngine
 from config import BACKTEST_START_DATE, BACKTEST_END_DATE, TIMEFRAME
-from test_data import generate_test_data
+# from test_data import generate_test_data  # 注释掉
 
 def main():
-    # Get test data
-    print("Generating test data...")
-    df = generate_test_data(BACKTEST_START_DATE, BACKTEST_END_DATE, TIMEFRAME)
+    # 读取真实BTC日线数据
+    print("读取OKX BTC/USDT 2023年日线数据...")
+    df = pd.read_csv('btc_okx_2023_1d.csv', index_col='timestamp', parse_dates=True)
     
     # Run backtest
     print("Running backtest...")
