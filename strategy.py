@@ -94,9 +94,9 @@ class TradingStrategy:
         """Get trading signal"""
         df = self.calculate_indicators(df)
         tech_signal = self.generate_signals(df).iloc[-1]
-        if tech_signal > 0.2:
+        if tech_signal > 0.7:
             return 1  # Buy signal
-        elif tech_signal < -0.2:
+        elif tech_signal < -0.7:
             return -1  # Sell signal
         else:
             return 0  # Hold

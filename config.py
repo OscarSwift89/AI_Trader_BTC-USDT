@@ -18,8 +18,8 @@ BACKTEST_START_DATE = '2022-01-01'
 BACKTEST_END_DATE = '2023-12-31'
 
 # Risk management parameters
-STOP_LOSS_PCT = 0.03  # 3% stop loss
-TAKE_PROFIT_PCT = 0.06  # 6% take profit
+STOP_LOSS_PCT = 0.05  # 5% stop loss
+TAKE_PROFIT_PCT = 0.10  # 10% take profit
 MAX_DRAWDOWN_PCT = 0.05  # 5% maximum drawdown
 
 # Technical indicator parameters
