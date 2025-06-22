@@ -1,10 +1,10 @@
 import pandas as pd
-from okx_api import OKXAPI
-from backtest import BacktestEngine
-from config import BACKTEST_START_DATE, BACKTEST_END_DATE, TIMEFRAME
-from report_generator import ReportGenerator
+from api.okx_api import OKXAPI
+from backtest.backtest import BacktestEngine
+from config.config import BACKTEST_START_DATE, BACKTEST_END_DATE, TIMEFRAME
+from utils.report_generator import ReportGenerator
 import time
-# from test_data import generate_test_data  # 注释掉
+# from scripts.test_data import generate_test_data  # 注释掉
 
 def main():
     # 初始化报告生成器
@@ -15,7 +15,7 @@ def main():
     
     # 读取真实BTC日线数据
     print("读取OKX BTC/USDT 2023年日线数据...")
-    df = pd.read_csv('btc_okx_2023_1d.csv', index_col='timestamp', parse_dates=True)
+    df = pd.read_csv('data/btc_okx_2023_1d.csv', index_col='timestamp', parse_dates=True)
     
     # Run backtest
     print("Running backtest...")
@@ -72,10 +72,10 @@ def main():
     report_gen.update_report(metrics, ai_models_info)
     print("✅ 测试报告已更新完成！")
     print("📊 报告文件:")
-    print("   - test_report.md (详细报告)")
-    print("   - executive_summary.md (执行摘要)")
-    print("   - trend_analysis.md (趋势分析)")
-    print("   - run_history.json (运行历史)")
+    print("   - reports/test_report.md (详细报告)")
+    print("   - reports/executive_summary.md (执行摘要)")
+    print("   - reports/trend_analysis.md (趋势分析)")
+    print("   - reports/run_history.json (运行历史)")
 
 if __name__ == "__main__":
     main() 
