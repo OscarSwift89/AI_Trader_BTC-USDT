@@ -1,0 +1,48 @@
+{
+  "runs": [
+    {
+      "timestamp": "2025-06-22 19:19:12",
+      "metrics": {
+        "total_return": -18.663909944757094,
+        "max_drawdown": 33.3828396559619,
+        "sharpe_ratio": -0.34878581001445974,
+        "win_rate": 8.16326530612245,
+        "total_trades": 49
+      },
+      "ai_models": {
+        "model1_accuracy": 64.93,
+        "model1_time": 1.18,
+        "model1_samples": 532,
+        "model1_buy": 376,
+        "model1_sell": 290,
+        "model2_accuracy": 70.37,
+        "model2_time": 0.0,
+        "model2_samples": 213,
+        "model2_buy": 150,
+        "model2_sell": 117
+      }
+    },
+    {
+      "timestamp": "2025-06-22 19:22:44",
+      "metrics": {
+        "total_return": -18.663909944757094,
+        "max_drawdown": 33.3828396559619,
+        "sharpe_ratio": -0.34878581001445974,
+        "win_rate": 8.16326530612245,
+        "total_trades": 49
+      },
+      "ai_models": {
+        "model1_accuracy": 64.93,
+        "model1_time": 1.16,
+        "model1_samples": 532,
+        "model1_buy": 376,
+        "model1_sell": 290,
+        "model2_accuracy": 70.37,
+        "model2_time": 0.0,
+        "model2_samples": 213,
+        "model2_buy": 150,
+        "model2_sell": 117
+      }
+    }
+  ]
+}
